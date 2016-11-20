@@ -5,23 +5,34 @@ import json
 import time
 import sys
 
-# Initialize location and file name
 fileName = "memes"
 location = ""
-
-if len(sys.argv) > 1:
-	location = sys.argv[1] + '/'
-if len(sys.argv) > 2:
-		fileName = sys.argv[2]
-
-if not fileName.endswith(".txt"):
-	fileName += ".txt"
-location += fileName 
 
 # Pages to scrape
 scrapePages = 1388
 # Time in seconds 
 sleepTime = 1 
+
+def run(argv):
+	global fileName
+	global location
+
+	if len(argv) > 1:
+		location = argv[1] + '/'
+
+	if len(argv) > 2:
+		fileName = argv[2]
+
+	if not fileName.endswith(".txt"):
+		fileName += ".txt"
+
+	location += fileName 
+
+	open(location, 'w+').close()
+
+	for i in range(scrapePages):
+		scrape(i)
+	time.sleep(sleepTime)
 
 def scrape(page):
     # Open up a connection and read the HTML contents of the page
@@ -39,10 +50,8 @@ def scrape(page):
 		file.write(meme + '\n')
 	file.close()
 
-# Clear our file
-open(location, 'w+').close()
 
-# SCRAPE!
-for i in range(scrapePages):
-	scrape(i)
-	time.sleep(sleepTime)
+# ---------------------------------------- #
+
+if __name__ == '__main__':
+  run(sys.argv)
