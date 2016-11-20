@@ -3,9 +3,21 @@ import re
 import urllib2
 import json
 import time
+import sys
 
-# Text file name
+# Initialize location and file name
 fileName = "memes"
+location = ""
+
+if len(sys.argv) > 1:
+	location = sys.argv[1] + '/'
+if len(sys.argv) > 2:
+		fileName = sys.argv[2]
+
+if not fileName.endswith(".txt"):
+	fileName += ".txt"
+location += fileName 
+
 # Pages to scrape
 scrapePages = 1388
 # Time in seconds 
@@ -22,15 +34,13 @@ def scrape(page):
 	memes = set(re.findall('http\://s\.quickmeme\.com/img/.*\.jpg', data1))
 
     # Write the contents of the memes set into our file
-	file = open(fileName, 'a')
+	file = open(location, 'a')
 	for meme in memes:
 		file.write(meme + '\n')
 	file.close()
 
-# Initialize file name to have extension
-fileName += ".txt"
 # Clear our file
-open(fileName, 'w+').close()
+open(location, 'w+').close()
 
 # SCRAPE!
 for i in range(scrapePages):
