@@ -4,12 +4,15 @@ import urllib
 import time
 import json
 
+import link_shortener
+
 class GoogleMemeScraper():
 
 	def __init__(self):
 		self.header = { 'User-Agent':"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36" }
 		self.baseUrl = "https://www.google.com/search?q={0}&source=lnms&tbm=isch"
 		self.query_set = self.__load_queryset()
+		self.scrape_event = []
 
 	def __scrape_query(self, query):
 		if query == "":
@@ -23,10 +26,18 @@ class GoogleMemeScraper():
 		for attribute in page.find_all("div", {"class" : "rg_meta"}):
 		    links.append(json.loads(attribute.text)["ou"])
 
+		if self.shorten_links:
+			links = set(links)
+			links = link_shortener.shorten_urls(links)
+
+		for callback in self.scrape_event:
+			callback(links)
+
 		return links
 
-	def start(self, sleepTime, queriesAmount = -1):
+	def start(self, sleepTime, shorten_links, queriesAmount = -1):
 		scrapedLinks = []
+		self.shorten_links = shorten_links
 		
 		if queriesAmount == 0:
 			return scrapedLinks
